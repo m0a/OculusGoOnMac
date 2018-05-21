@@ -93,18 +93,17 @@ public class OVRCameraRig : MonoBehaviour
     protected Camera _rightEyeCamera;
 
 #if UNITY_EDITOR
-    private OVRPose dummyPose = new OVRPose();
-    private float rotVertical = 0;
-    private float rotHorizonal = 0;
-    private Quaternion dummyLeftOrientation = new Quaternion();
-    private Quaternion dummyRightOrientation = new Quaternion();
+    private OVRPose dummyHead = new OVRPose();
+    private float rotHeadVertical = 0;
+    private float rotHeadHorizonal = 0;
+    private Quaternion dummyLeftHandOrientation = new Quaternion();
+    private Quaternion dummyRightHandOrientation = new Quaternion();
     private float rotArmVertical = 0;
     private float rotArmHorizonal = 0;
-    //private Vector3 dummyLeftPosition = new Vector3(-0.2f, 0.1f, 0.3f);
-    private Vector3 dummyRightPositionDiff = new Vector3(0.2f, -0.1f, 0.3f);
-    private Vector3 dummyRightPosition = new Vector3();
+    private Vector3 dummyRightHandPositionDiff = new Vector3(0.2f, -0.1f, 0.3f);
+    private Vector3 dummyRightHandPosition = new Vector3();
 
-    private float normalizeRot(float rot)
+    private float NormalizeRot(float rot)
     {
         if (rot > 360)
         {
@@ -127,22 +126,28 @@ public class OVRCameraRig : MonoBehaviour
     private void DummyUpdate()
     {
         // Head controll
-        rotHorizonal += Input.GetAxis("Horizontal");
-        rotHorizonal = normalizeRot(rotHorizonal);
-        rotVertical += Input.GetAxis("Vertical");
-        rotVertical = normalizeRot(rotVertical);
+        rotHeadHorizonal += Input.GetAxis("Horizontal");
+        rotHeadHorizonal = NormalizeRot(rotHeadHorizonal);
+        rotHeadVertical += Input.GetAxis("Vertical");
+        rotHeadVertical = NormalizeRot(rotHeadVertical);
 
-        dummyPose.orientation = RotXY(rotHorizonal, rotVertical);
+        dummyHead.orientation = RotXY(rotHeadHorizonal, rotHeadVertical);
 
         // Controller controll
         rotArmHorizonal += Input.GetAxis("Mouse X");
-        rotArmHorizonal = normalizeRot(rotArmHorizonal);
+        rotArmHorizonal = NormalizeRot(rotArmHorizonal);
         rotArmVertical += Input.GetAxis("Mouse Y");
-        rotArmVertical = normalizeRot(rotArmVertical);
+        rotArmVertical = NormalizeRot(rotArmVertical);
 
         // follow head move
-        dummyRightPosition = dummyPose.orientation * (dummyRightPositionDiff);
-        dummyRightOrientation = RotXY(rotArmHorizonal * 10, rotArmVertical * 10);
+        dummyRightHandPosition = dummyHead.orientation * dummyRightHandPositionDiff;
+
+        // 頭の回転に合わせてコントローラも回転したい場合
+        dummyRightHandOrientation = dummyHead.orientation * RotXY(rotArmHorizonal * 10 , rotArmVertical * 10);
+        // 頭の回転に影響しないようにしたい場合
+        //dummyRightHandOrientation = RotXY(rotArmHorizonal * 10, rotArmVertical * 10);
+
+        // TODO: 左手側の用意
         //dummyLeftOrientation = dummyRightOrientation;
 
     }
@@ -202,7 +207,7 @@ public class OVRCameraRig : MonoBehaviour
 #endif
 
 #if UNITY_EDITOR
-        OVRPose tracker = dummyPose;
+        OVRPose tracker = dummyHead;
 #else
         OVRPose tracker = OVRManager.tracker.GetPose();
 #endif
@@ -224,8 +229,8 @@ public class OVRCameraRig : MonoBehaviour
         //leftEyeAnchor.localRotation = tracker.orientation;
         //rightEyeAnchor.localRotation = tracker.orientation;
 
-        leftHandAnchor.localRotation = dummyLeftOrientation;
-        rightHandAnchor.localRotation = dummyRightOrientation;
+        leftHandAnchor.localRotation = dummyLeftHandOrientation;
+        rightHandAnchor.localRotation = dummyRightHandOrientation;
 #else
 
         leftHandAnchor.localRotation = OVRInput.GetLocalControllerRotation(OVRInput.Controller.LTouch);
@@ -243,8 +248,8 @@ public class OVRCameraRig : MonoBehaviour
         rightEyeAnchor.localPosition = monoscopic ? centerEyeAnchor.localPosition : UnityEngine.VR.InputTracking.GetLocalPosition(UnityEngine.VR.VRNode.RightEye);
 #endif
 #if UNITY_EDITOR
-        leftHandAnchor.localPosition = dummyRightPosition;
-        rightHandAnchor.localPosition = dummyRightPosition;
+        leftHandAnchor.localPosition = dummyRightHandPosition;
+        rightHandAnchor.localPosition = dummyRightHandPosition;
 
 #else
         leftHandAnchor.localPosition = OVRInput.GetLocalControllerPosition(OVRInput.Controller.LTouch);
