@@ -1,14 +1,6 @@
 # OculusGoOnMac
 
 
-前回は玉転がしゲームをOculusGoに対応しました。
-https://qiita.com/m0a/items/98cdc1e03cf067769578
-
-その後、もくもく会でUnityアプリを作りました。
-
-作ったゲームの動画は[こちら](https://youtu.be/rGerw-k5Vd8
-)
-
 上記を作ってみてわかったことがあります。
 **デバックが辛い**。
 Editor上でPlayしようとしても視点操作等が効ききません。
@@ -32,10 +24,6 @@ http://heyassy.hateblo.jp/entry/2017/10/08/113757
 
 
 # Unity上での作業
-
-## TLDR
-以下にサンプルを含めたコードが置いてあります。そのまま動くと思います。
-https://github.com/m0a/OculusGoOnMac
 
 ## 内容
 
